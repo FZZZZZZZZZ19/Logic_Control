@@ -79,7 +79,46 @@
 #define POSITION_PID_KI 0.07f /* 位置环 Ki, unit: counts/s per (count*s) */
 #define POSITION_PID_KD 0.0f  /* 位置环 Kd, unit: counts/s per (count/s) */
 /* Limit the position PID output as a percentage of max motor speed.
- * e.g. 100.0f = full speed (MOTOR_MAX_SPEED_COUNTS_PER_SEC counts/s).
+ * e.g. 100.0f = full speed (MOTOR_MAX_SPEED_COUNTS_PER_SEC counts/s).from Maix import FPIOA
+from machine import UART
+import time
+
+def qrcode():
+    # 模拟扫描到二维码
+    class Result:
+        def payload(self):
+            return "2"  # 返回圈数
+    return [Result()]
+
+if __name__ == "__main__":
+    print("初始化...")
+    
+    # 引脚映射
+    fpioa = FPIOA()
+    fpioa.set_function(3, FPIOA.UART1_TXD)  # IO3 -> TX
+    fpioa.set_function(4, FPIOA.UART1_RXD)  # IO4 -> RX
+    
+    # 打开串口
+    uart = UART(UART.UART1, 115200)
+    print("串口已打开")
+    
+    # 主循环
+    while True:
+        res = qrcode()
+        if res:
+            number = res[0].payload()
+            print(f"扫描到: {number}")
+            
+            # 发送 STOP + CIRCLE
+            uart.write(b"STOP\n")
+            time.sleep(0.2)
+            uart.write(f"CIRCLE {number}\n".encode())
+            print(f"已发送: CIRCLE {number}")
+            
+            # 等待执行
+            time.sleep(int(number) * 5)
+        
+        time.sleep(1)
  * Per-wheel macros so you can tune each independently. */
 #define POSITION_OUTPUT_LIMIT_RR 30.0f /* 右后轮位置环输出限幅, unit: % of max speed */
 #define POSITION_OUTPUT_LIMIT_RL 30.0f /* 左后轮位置环输出限幅, unit: % of max speed */
