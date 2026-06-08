@@ -28,6 +28,9 @@
  * in this file to calibrate the turn distance for your robot.
  */
 #define CIRCLE_TURN_WHEEL_TRAVEL_M (3.14159265359f * (WHEEL_BASE_M + WHEEL_TRACK_M)) /* 原地转一圈时单轮估算行程, unit: m */
+/* 原地旋转实际角度修正因子。因机械摩擦/打滑，实际旋转角度偏小时增大此值。
+ * 例：命令 1圈 实测 1.9圈 -> 1/1.9 ≈ 0.526f */
+#define TURN_CORRECTION_FACTOR 0.505f /* 旋转编码器计数补偿因子, unit: ratio */
 
 /* Command-level output limit: any high-level command (FORWARD/BACKWARD/LEFT/RIGHT/RUN
  * that sets motor percent or starts position motion) will be capped to this percent
@@ -36,7 +39,7 @@
 #define COMMAND_MAX_OUTPUT_PERCENT 30.0f /* 高层命令最大输出限幅, unit: % */
 
 /* Position move control */
-#define COMMAND_MOTION_TIMEOUT_S 10U                           /* 位置运动超时时间, unit: s */
+#define COMMAND_MOTION_TIMEOUT_S 60U                           /* 位置运动超时时间, unit: s */
 #define POSITION_TOLERANCE_COUNTS 20                           /* 位置到达容差, unit: counts */
 #define POSITION_TIMEOUT_MS (COMMAND_MOTION_TIMEOUT_S * 1000U) /* 位置运动超时时间, unit: ms */
 #define POSITION_POLL_DELAY_MS 10U                             /* 位置轮询周期, unit: ms */
